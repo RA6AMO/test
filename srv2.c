@@ -13,7 +13,14 @@ int main(int argc,char *argv[])
         return 1;
     }
 
-    int port =atoi(argv[2]);
+    char *endptr;
+    long port = strtol(argv[2], &endptr, 10);
+
+    if (*endptr != '\0' || port <= 0 || port > 65535)
+    {
+        printf("Invalid port number\n");
+        return 1;
+    }
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
     SOCKET serverSocket, clientSocket;
@@ -39,7 +46,13 @@ int main(int argc,char *argv[])
         return 1;
     }   
 
-    listen(serverSocket, 1);
+    if(listen(serverSocket, 1)==SOCKET_ERROR)
+    {
+        printf("listen failed\n");
+        closesocket(serverSocket);
+        WSACleanup();
+        return 1;
+    }
     printf("Server listening on port %d\n", port);
 
     clientSocket = accept(serverSocket, (struct sockaddr *)&clientIPPort, &clientAddrSize);

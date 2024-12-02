@@ -14,7 +14,14 @@ int main(int argc, char *argv[]) {
     }
 
     const char *ip = argv[2];
-    int port = atoi(argv[4]);
+    char *endptr;
+    long port = strtol(argv[4], &endptr, 10);
+
+    if (*endptr != '\0' || port <= 0 || port > 65535)
+    {
+        printf("Invalid port number\n");
+        return 1;
+    }
     WSADATA wsaData;
     SOCKET clientSocket;
     struct sockaddr_in serverAddr;
